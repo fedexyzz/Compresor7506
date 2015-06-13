@@ -4,7 +4,7 @@ CC=gcc
 all: Pruebas1
 
 Pruebas1: packarch.o lectura.o vector_dinamico.o heap.o Pruebas1.o
-	$(CC) heap.o vector_dinamico.o lectura.o packarch.o Pruebas1.o -o Pruebas1
+	$(CC) heap.o vector_dinamico.o lectura.o packarch.o Pruebas1.o -o Pruebas1 -lm
 
 Pruebas1.o: Pruebas1.c
 	$(CC) $(CFLAGS) Pruebas1.c

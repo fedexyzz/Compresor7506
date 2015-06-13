@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <math.h>
 #include "packarch.h"
 #include "heap.h"
 #include "vector_dinamico.h"
@@ -28,7 +29,12 @@
 #define EXT1 "csv"
 #define EXT2 "_r.dat"
 #define EXT3 "_o.dat"
+#define EXT4 "lz77"
+#define EXT5 "_d.dat"
 #define CHUNK 8
+#define MEM 4
+#define INSP 7
+#define MATCH 2
 
 size_t debinarise (size_t num) {
 	return (num == 0 || num == 1 ? num : ((num%10) + 2*debinarise(num/10))); 
@@ -668,13 +674,16 @@ bool reordenar (packarch_t* pack, size_t mini, size_t chunk, char* carpeta) {
 	generar_archivos(pack, chunk,carpeta);
 	unificar(tamanio_bloque(pack)*mini/100,chunk,pack,carpeta);
 	return true;
-}	
+}
+
+char* comprimir (char* src, size_t diccionario, size_t inspeccion, size_t match) {
+	size_t longitudes = ceil(log2(fmin(inspeccion,diccionario)-match+1));
+	size_t posiciones = ceil(log2(diccionario-match+1));
+	printf("%u %u\n", longitudes, posiciones);
+	return NULL;
+}		
 
 int main () {
-	packarch_t* pack= crear_packarch(ARCHIVO,1,REG);
-	exportar(pack);
-	relocalizar(pack, UMIN);
-	reordenar(pack, UMIN, CHUNK, TEMP);
-	packarch_destruir(pack);
+	comprimir(NULL, 18, 9, 4);
 	return 0;
 }	
