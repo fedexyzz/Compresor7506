@@ -32,9 +32,10 @@
 #define EXT4 "lz77"
 #define EXT5 "_d.dat"
 #define CHUNK 8
-#define MEM 4
-#define INSP 7
+#define MEM 6
+#define INSP 5
 #define MATCH 2
+#define STRING "RAPATAPATAPARAPAPA"
 
 size_t debinarise (size_t num) {
 	return (num == 0 || num == 1 ? num : ((num%10) + 2*debinarise(num/10))); 
@@ -679,11 +680,12 @@ bool reordenar (packarch_t* pack, size_t mini, size_t chunk, char* carpeta) {
 char* comprimir (char* src, size_t diccionario, size_t inspeccion, size_t match) {
 	size_t longitudes = ceil(log2(fmin(inspeccion,diccionario)-match+1));
 	size_t posiciones = ceil(log2(diccionario-match+1));
-	printf("%u %u\n", longitudes, posiciones);
+	size_t largopar = longitudes + posiciones + 1;
+	printf("%u\n", largopar);
 	return NULL;
 }		
 
 int main () {
-	comprimir(NULL, 18, 9, 4);
+	comprimir(STRING, MEM, INSP, MATCH);
 	return 0;
 }	
