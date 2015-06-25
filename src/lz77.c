@@ -51,8 +51,7 @@ char* comprimir(char* src, lz77* comp, size_t largo) {
 	size_t longlong = ceil(log2(fmin(comp->taminsp,comp->tammem)-(comp->match)+1));
 	size_t longpos = ceil(log2((comp->tammem)-(comp->match)+1));
 	size_t largopar = longlong + longpos + 1;
-	printf("LargoPar: %u\n", largopar);
-	char* compresion = calloc(largo, fmax(LARGOCAR, largopar));
+	char* compresion = calloc(fmax(LARGOCAR+1, largopar),largo);
 	for (size_t i = 0; i < (comp->tammem); i++) comp->memoria[i] = 0;
 	for (size_t i = 0; i < (comp->taminsp); i++) comp->inspeccion[i] = src[i];
 	size_t copiados = 0;
@@ -69,11 +68,12 @@ char* comprimir(char* src, lz77* comp, size_t largo) {
 				posicion = j;
 			}	
 		}
-		printf("Coinc: %u, Pos: %u\n", longitud, posicion);
+		printf("Pos: %u, Long: %u\n", posicion, longitud);
 		if (longitud < comp->match) {
 			iteracion=1;
 			compresion[copiados++] = 0;
-			size_t binario = binarise(src[copiados]);
+			size_t binario = binarise(src[i]);
+			printf("%u\n", binario);
 			for (int j = LARGOCAR-1; j>=0; j--) {
 				compresion[copiados++] = binario/pow(10, j);
 				binario = binario%((size_t) pow(10,j));
@@ -84,6 +84,7 @@ char* comprimir(char* src, lz77* comp, size_t largo) {
 			compresion[copiados++] = 1;
 			longitud = binarise(longitud-comp->match);
 			posicion = binarise(posicion);
+			printf("%02u%02u\n", posicion,longitud);
 			for (int j = longpos-1; j>=0; j--) {
 				compresion[copiados++] = posicion/(pow(10,j));
 				posicion = posicion%(size_t) pow(10,j);
@@ -104,6 +105,11 @@ char* comprimir(char* src, lz77* comp, size_t largo) {
 			comp->inspeccion[comp->taminsp-1] = src[(i++)+comp->taminsp];
 		}
 	}
+	printf("\n");
+	for(size_t i = 0; i<copiados; i++) {
+		printf("%u",compresion[i]);
+	}	
+	printf("\n\n");
 	size_t tamaniofinal = ceil((copiados)/8);
 	char* compresionfinal = calloc(tamaniofinal,1);
 	for (size_t i = 0; i<tamaniofinal; i++) {
@@ -113,11 +119,34 @@ char* comprimir(char* src, lz77* comp, size_t largo) {
 		}	
 		compresionfinal[i] = debinarise(numero);
 	}
-	printf("%s\n",compresion);
+	free(compresion);
 	printf("Tamanio Inicial: %u bits\nTamanio Final: %u bits\nRelación: %.02f%%\n", largo*8 ,copiados, 100*(double)(copiados)/(double)(largo*8));	
 	return compresionfinal;
 }
 
 char* descomprimir(lz77* comp, char* src, size_t largo) {
+	for (size_t i = 0; i < (comp->tammem); i++) comp->memoria[i] = 0;
+	for (size_t i = 0; i < (comp->taminsp); i++) comp->inspeccion[i] = src[i];
+	size_t longlong = ceil(log2(fmin(comp->taminsp,comp->tammem)-(comp->match)+1));
+	size_t longpos = ceil(log2((comp->tammem)-(comp->match)+1));
+	char* srcbits = calloc(largo,8);
+	char* descomprimido = calloc(8,fmax(1,(fmin(comp->taminsp,comp->tammem)-(comp->match)+1)));
+	for (size_t i = 0; i<largo; i++) {
+		size_t fuente = binarise(src[i]);
+		for (int j = 7; j>= 0; j--) {
+			srcbits[i*8+7-j] = fuente/pow(10,j);
+			fuente = fuente%(size_t) pow(10,j);
+		}	
+	}
+	size_t i = 0;
+	while (i<largo*8) {
+		if (srcbits[i++] == 0) {
+			size_t fuente = 0;
+			for (size_t j = 0; j<8; j++) {
+				fuente = fuente*10 + srcbits[i++];
+			}	
+		}	
+		
+	}		
 	return NULL;
 }					
