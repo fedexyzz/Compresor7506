@@ -9,6 +9,7 @@
 #include "heap.h"
 #include "vector_dinamico.h"
 #include "lectura.h"
+#include "lz77.c"
 #define ARCHIVO "/home/fvb/Desktop/Workspace/TP7506/Ejemplo_1.dat"
 #define ARCHR "/home/fvb/Desktop/Workspace/TP7506/Ejemplo_1_r.dat"
 #define ARCH0 "/home/fvb/Desktop/Workspace/TP7506/Ejemplo_1_o.dat"
@@ -36,14 +37,6 @@
 #define INSP 5
 #define MATCH 2
 #define STRING "RAPATAPATAPARAPAPA"
-
-size_t debinarise (size_t num) {
-	return (num == 0 || num == 1 ? num : ((num%10) + 2*debinarise(num/10))); 
-}
-
-size_t binarise (size_t num) {
-	return (num==0 || num==1 ? num : ((num%2)+10*binarise(num/2)));
-}
 
 char* crear_bitmap (char* bloque, size_t tam) {
 	size_t binario,j;
@@ -677,15 +670,9 @@ bool reordenar (packarch_t* pack, size_t mini, size_t chunk, char* carpeta) {
 	return true;
 }
 
-char* comprimir (char* src, size_t diccionario, size_t inspeccion, size_t match) {
-	size_t longitudes = ceil(log2(fmin(inspeccion,diccionario)-match+1));
-	size_t posiciones = ceil(log2(diccionario-match+1));
-	size_t largopar = longitudes + posiciones + 1;
-	printf("%u\n", largopar);
-	return NULL;
-}		
-
 int main () {
-	comprimir(STRING, MEM, INSP, MATCH);
+	lz77* comp = nuevo_lz77(MEM,INSP,MATCH);
+	comprimir(STRING, comp, strlen(STRING)); 
+	destruir_lz77(comp);
 	return 0;
 }	
