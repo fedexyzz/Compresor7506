@@ -52,7 +52,7 @@ char* comprimir(char* src, lz77* comp, size_t largo) {
 	size_t longpos = ceil(log2((comp->tammem)-(comp->match)+1));
 	size_t largopar = longlong + longpos + 1;
 	char* compresion = calloc(fmax(LARGOCAR+1, largopar),largo);
-	for (size_t i = 0; i < (comp->tammem); i++) comp->memoria[i] = 0;
+	for (size_t i = 0; i < (comp->tammem); i++) comp->memoria[i] = ' ';
 	for (size_t i = 0; i < (comp->taminsp); i++) comp->inspeccion[i] = src[i];
 	size_t copiados = 0;
 	size_t i = 0;
@@ -61,7 +61,7 @@ char* comprimir(char* src, lz77* comp, size_t largo) {
 		size_t iteracion = 0;
 		size_t longitud = 0;
 		size_t posicion = 0;
-		for (size_t j = 0; j<comp->tammem-comp->match; j++) {
+		for (size_t j = 0; j<comp->tammem-comp->match+1; j++) {
 			size_t coincidencia = comparar_strings(comp->memoria+j, comp->inspeccion, fmin(comp->tammem-j,comp->taminsp));
 			if(coincidencia > longitud) {
 				longitud = coincidencia;
