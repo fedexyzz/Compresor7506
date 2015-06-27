@@ -93,7 +93,7 @@ char* comprimir(char* src, lz77* comp, size_t largo) {
 				posicion = posicion%(size_t) pow(10,j);
 			}
 			for (int j = longlong-1; j>=0; j--) {
-				compresion[copiados++] = longitud/(size_t)(pow(10,longlong-j));
+				compresion[copiados++] = longitud/(size_t)pow(10,j);
 				longitud = longitud%(size_t) pow(10,j);
 			}
 		}
@@ -129,10 +129,11 @@ char* descomprimir(lz77* comp, char* src, size_t largo) {
 	for (size_t i = 0; i < (comp->tammem); i++) comp->memoria[i] = ' ';
 	for (size_t i = 0; i < (comp->taminsp); i++) comp->inspeccion[i] = src[i];
 	char* srcbits = calloc(largo,8);
-	char* descomprimido = calloc(ceil((largo/largopar))*fmin(comp->taminsp,comp->tammem),8);
-	for (size_t i = 0; i<largo; i++) {
+	size_t max = ceil((largo/largopar))*fmin(comp->taminsp,comp->tammem);
+	char* descomprimido = calloc(max,8);
+	for (size_t i = 0; i<strlen(src); i++) {
 		size_t fuente = binarisebyte(src[i]);
-		printf("%08u ", fuente);
+		printf("F: %08u\n", fuente);
 		for (size_t j = 0; j< 8; j++) {
 			srcbits[i*8+j] = (size_t) fuente/(size_t) pow(10,7-j);
 			fuente = (size_t) fuente%(size_t) pow(10,7-j);
@@ -140,17 +141,19 @@ char* descomprimir(lz77* comp, char* src, size_t largo) {
 	}
 	size_t i = 0;
 	size_t desc = 0;
-	while (i<largo*8) {
+	while (i<max*8 && desc<largo) {
 		if (srcbits[i++] == 0) {
 			size_t fuente = 0;
 			for (size_t j = 0; j<8; j++) {
 				fuente = fuente*10 + srcbits[i++];
 			}
+			fuente = debinarise(fuente);
 			for(size_t j = 0; j<comp->tammem-1; j++) {
 				comp->memoria[j] = comp->memoria[j+1];
 			}
 			comp->memoria[comp->tammem-1] = fuente;
 			descomprimido[desc++] = fuente;
+			printf("%c\n", descomprimido[desc-1]);
 		}	else {
 			size_t posicion = 0;
 			size_t longitud = 0;
@@ -162,11 +165,14 @@ char* descomprimir(lz77* comp, char* src, size_t largo) {
 				longitud = longitud * 10 + srcbits[i++];
 			}
 			longitud = debinarise(longitud) + comp->match;
+			printf("Pos:%u Long:%u\n", posicion, longitud);
 			for (size_t j = 0; j<longitud; j++) {
-				descomprimido[desc] = comp->memoria[posicion];
-				for (size_t k = 0; k<comp->tammem-1; k++)	comp->memoria[k] = comp->memoria[k+1];
-				comp->memoria[comp->tammem] = descomprimido[desc++];
-			}	
+				descomprimido[desc++] = comp->memoria[posicion];
+				printf("%c", descomprimido[desc-1]);
+				for (size_t k=0; k < comp->tammem-1; k++) comp->memoria[k] = comp->memoria[k+1];
+				comp->memoria[comp->tammem-1] = descomprimido[desc-1];
+			}
+			printf("\n");					
 		}	
 	}	
 	return descomprimido;
