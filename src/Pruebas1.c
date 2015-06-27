@@ -672,7 +672,8 @@ bool reordenar (packarch_t* pack, size_t mini, size_t chunk, char* carpeta) {
 
 int main () {
 	lz77* comp = nuevo_lz77(MEM,INSP,MATCH);
-	comprimir(STRING, comp, strlen(STRING)); 
+	char* comprimido = comprimir(STRING, comp, strlen(STRING));
+	descomprimir(comp, comprimido, strlen(comprimido));
 	destruir_lz77(comp);
 	return 0;
 }	
